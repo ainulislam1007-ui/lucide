@@ -1,111 +1,84 @@
-# Lucide React
 
-React components for Lucide icons that integrate seamlessly into your React applications. Each icon is a fully-typed React component that renders as an optimized inline SVG, giving you the flexibility of components with the performance of vector graphics.
+import React, { useState } from 'react';
+import { Lock, User as UserIcon } from 'lucide-react';
 
-**What you can accomplish:**
-- Import icons as React components with full TypeScript support
-- Pass props to customize size, color, stroke width, and other SVG attributes
-- Use icons in JSX with the same ease as any other React component
-- Benefit from automatic tree-shaking to include only the icons you use
-- Create dynamic icon components that respond to state and user interactions
+interface LoginProps {
+  onLogin: (username: string) => void;
+}
 
-## Installation
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-::: code-group
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simple demo validation: admin / password
+    if (username === 'ainul10' && password === '166101') {
+      onLogin(username);
+    } else {
+      setError('ভুল ইউজার নেম বা পাসওয়ার্ড (Try admin / 123456)');
+    }
+  };
 
-```sh [pnpm]
-pnpm add lucide-react
-```
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 to-indigo-900 px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 transform transition-all hover:scale-[1.01]">
+        <div className="text-center mb-8">
+          <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Lock className="text-blue-600 w-8 h-8" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-800">লগইন করুন</h2>
+          <p className="text-gray-500 mt-2">আপনার অ্যাকাউন্টে প্রবেশ করতে তথ্য দিন</p>
+        </div>
 
-```sh [yarn]
-yarn add lucide-react
-```
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ইউজার নেম</label>
+            <div className="relative">
+              <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                placeholder="Username লিখুন"
+                required
+              />
+            </div>
+          </div>
 
-```sh [npm]
-npm install lucide-react
-```
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">পাসওয়ার্ড</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                placeholder="Password লিখুন"
+                required
+              />
+            </div>
+          </div>
 
-```sh [bun]
-bun add lucide-react
-```
+          {error && (
+            <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-100">
+              {error}
+            </div>
+          )}
 
-:::
-
-## How to use
-
-Lucide is built with ES Modules, so it's completely tree-shakable.
-
-Each icon can be imported as a React component, which renders an inline SVG element. This way, only the icons that are imported into your project are included in the final bundle. The rest of the icons are tree-shaken away.
-
-### Example
-
-Additional props can be passed to adjust the icon:
-
-```jsx
-import { Camera } from 'lucide-react';
-
-// Usage
-const App = () => {
-  return <Camera color="red" size={48} />;
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all transform active:scale-95"
+          >
+            প্রবেশ করুন
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 };
 
-export default App;
-```
-
-## Props
-
-| name                  | type      | default      |
-| --------------------- | --------- | ------------ |
-| `size`                | *number*  | 24           |
-| `color`               | *string*  | currentColor |
-| `strokeWidth`         | *number*  | 2            |
-| `absoluteStrokeWidth` | *boolean* | false        |
-
-### Applying props
-
-To customize the appearance of an icon, you can pass custom properties as props directly to the component. The component accepts all SVG attributes as props, which allows flexible styling of the SVG elements. See the list of SVG Presentation Attributes on [MDN](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/Presentation).
-
-```jsx
-// Usage
-const App = () => {
-  return <Camera size={48} fill="red" />;
-};
-```
-
-## With Lucide lab or custom icons
-
-[Lucide lab](https://github.com/lucide-icons/lucide-lab) is a collection of icons that are not part of the Lucide main library.
-
-They can be used by using the `Icon` component.
-All props like regular lucide icons can be passed to adjust the icon appearance.
-
-### Using the `Icon` component
-
-This creates a single icon based on the iconNode passed and renders a Lucide icon component.
-
-```jsx
-import { Icon } from 'lucide-react';
-import { coconut } from '@lucide/lab';
-
-const App = () => (
-  <Icon iconNode={coconut} />
-);
-```
-
-## Dynamic Icon Component
-
-It is possible to create one generic icon component to load icons. But it is not recommended, since it is importing all icons during the build. This increases build time and the different modules it will create.
-
-`DynamicIcon` is useful for applications that want to show icons dynamically by icon name. For example, when using a content management system with where icon names are stored in a database.
-
-For static use cases, it is recommended to import the icons directly.
-
-The same props can be passed to adjust the icon appearance. The `name` prop is required to load the correct icon.
-
-```jsx
-import { DynamicIcon } from 'lucide-react/dynamic';
-
-const App = () => (
-  <DynamicIcon name="camera" color="red" size={48} />
-);
-```
+export default Login;
